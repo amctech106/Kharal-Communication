@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kharal Communication - Stock & Billing</title>
+  <!-- Optional: if data.js sits next to this file it is loaded automatically -->
+  <script src="data.js" onerror="void 0"></script>
+  <style>
+    :root {
+      --ink: #0f2e2a;
+      --acc: #f2a900;
+      --bg: #eef2f1;
+      --card: #fff;
+      --line: #d5dedc;
+      --txt: #1b2a28;
+      --mut: #5d716d;
+      --red: #c0392b;
+      --grn: #1e8a5a
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", Tahoma, sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      line-height: 1.45
+    }
+
+    header {
+      background: var(--ink);
+      color: #fff;
+      text-align: center;
+      padding: 18px 12px;
+      border-bottom: 5px solid var(--acc)
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 5vw, 2.4rem);
+      letter-spacing: 2px
+    }
+
+    header p {
+      margin: 4px 0 0;
+      color: #cfe3de
+    }
+
+    header .c {
+      color: var(--acc);
+      font-weight: bold
+    }
+
+    nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      max-width: 1000px;
+      margin: 14px auto 0;
+      padding: 0 10px
+    }
+
+    button,
+    .btn {
+      font: inherit;
+      cursor: pointer;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: var(--ink);
+      color: #fff;
+      font-weight: bold
+    }
+
+    button:hover {
+      filter: brightness(1.2)
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 3px solid var(--acc);
+      outline-offset: 1px
+    }
+
+    nav button {
+      background: #fff;
+      color: var(--ink);
+      border: 2px solid var(--ink);
+      padding: 12px 8px
+    }
+
+    nav button.on {
+      background: var(--ink);
+      color: var(--acc)
+    }
+
+    .tools {
+      max-width: 1000px;
+      margin: 10px auto 0;
+      padding: 0 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center
+    }
+
+    .tools button {
+      padding: 8px 12px;
+      font-size: .85rem
+    }
+
+    .b2 {
+      background: #fff;
+      color: var(--ink);
+      border: 2px solid var(--ink)
+    }
+
+    .st {
+      font-size: .82rem;
+      color: var(--mut);
+      flex: 1;
+      min-width: 200px
+    }
+
+    .st b {
+      color: var(--ink)
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 12px auto;
+      padding: 0 10px;
+      min-height: 45vh
+    }
+
+    section {
+      display: none;
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid var(--line)
+    }
+
+    section.on {
+      display: block
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      color: var(--ink)
+    }
+
+    .g {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px
+    }
+
+    label {
+      display: block;
+      font-size: .85rem;
+      font-weight: bold;
+      color: var(--mut);
+      margin-bottom: 3px
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1.5px solid var(--line);
+      border-radius: 8px;
+      font: inherit;
+      background: #fff
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px
+    }
+
+    .acc {
+      background: var(--acc);
+      color: #1b1b1b
+    }
+
+    .danger {
+      background: var(--red)
+    }
+
+    .sm {
+      padding: 5px 9px;
+      font-size: .8rem
+    }
+
+    .wrap {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px
+    }
+
+    th,
+    td {
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle
+    }
+
+    th {
+      background: var(--ink);
+      color: #fff;
+      font-size: .85rem
+    }
+
+    td.n,
+    th.n {
+      text-align: right
+    }
+
+    tfoot td {
+      font-weight: bold;
+      background: #f6f9f8
+    }
+
+    .low {
+      color: var(--red);
+      font-weight: bold
+    }
+
+    .sum {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin: 12px 0
+    }
+
+    .sum div {
+      background: var(--bg);
+      border-left: 5px solid var(--acc);
+      padding: 10px;
+      border-radius: 6px
+    }
+
+    .sum b {
+      display: block;
+      font-size: 1.3rem;
+      color: var(--ink)
+    }
+
+    .res {
+      border: 1.5px solid var(--line);
+      border-radius: 8px;
+      max-height: 230px;
+      overflow: auto;
+      margin-top: 6px
+    }
+
+    .res div {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px
+    }
+
+    .res div:hover {
+      background: #fff6dc
+    }
+
+    .res small {
+      color: var(--mut)
+    }
+
+    .empty {
+      color: var(--mut);
+      padding: 14px;
+      text-align: center
+    }
+
+    .q {
+      width: 70px
+    }
+
+    footer {
+      max-width: 1000px;
+      margin: 30px auto 18px;
+      padding: 14px 10px;
+      text-align: center;
+      color: var(--mut);
+      font-size: .88rem
+    }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      background: var(--ink);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 30px;
+      display: none;
+      z-index: 9;
+      max-width: 90%
+    }
+
+    #printArea {
+      display: none
+    }
+
+    @media (max-width:640px) {
+      .stack thead {
+        display: none
+      }
+
+      .stack tr {
+        display: block;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        padding: 6px
+      }
+
+      .stack td {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        border: 0;
+        padding: 5px 6px;
+        text-align: right
+      }
+
+      .stack td::before {
+        content: attr(data-l);
+        font-weight: bold;
+        color: var(--mut);
+        text-align: left
+      }
+
+      .stack tfoot tr {
+        background: #f6f9f8
+      }
+    }
+
+    @media print {
+      @page {
+        margin: 10mm
+      }
+
+      header,
+      nav,
+      .tools,
+      main,
+      footer,
+      #toast {
+        display: none !important
+      }
+
+      html,
+      body {
+        background: #fff !important;
+        margin: 0;
+        padding: 0
+      }
+
+      #printArea {
+        display: block !important;
+        font-family: Arial, sans-serif;
+        color: #000;
+        padding: 0
+      }
+
+      #printArea table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10px 0
+      }
+
+      #printArea th,
+      #printArea td {
+        border: 1px solid #999;
+        padding: 6px;
+        text-align: left
+      }
+
+      #printArea td.n,
+      #printArea th.n {
+        text-align: right
+      }
+
+      #printArea th {
+        background: #eee !important;
+        color: #000;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact
+      }
+
+      .pc {
+        text-align: center
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>KHARAL COMMUNICATION</h1>
+    <p>we deal in all kind of Mobile accessories</p>
+    <p>Contact : <span class="c">Ahmed Kharal 03172128750</span></p>
+  </header>
+  <nav id="nav">
+    <button data-v="add">Add Stock</button>
+    <button data-v="stock">Show Stock</button>
+    <button data-v="bill">Generate Bill</button>
+    <button data-v="rep">Show Report</button>
+  </nav>
+  <div class="tools">
+    <button class="b2" id="cBtn" onclick="connect()">Connect data.js</button>
+    <button onclick="exportDB()">Export Backup</button>
+    <button class="b2" onclick="$('imp').click()">Import Backup</button>
+    <input type="file" id="imp" accept=".json,.js" hidden onchange="importDB(this)">
+    <span class="st" id="st"></span>
+  </div>
+
+  <main>
+    <section id="add">
+      <h2 id="addT">Add Stock</h2>
+      <form id="sf" onsubmit="saveStock(event)">
+        <div class="g">
+          <div><label for="fn">Product name</label><input id="fn" required></div>
+          <div><label for="fm">Model / Company</label><input id="fm" required></div>
+          <div><label for="fq">Quantity</label><input id="fq" type="number" min="0" step="1" required></div>
+          <div><label for="fp">Price (Rs)</label><input id="fp" type="number" min="0" step="any" required></div>
+          <div><label for="fs">Shelf (Almari) number</label><input id="fs" required></div>
+        </div>
+        <div class="row"><button class="acc" id="sBtn">Save stock</button><button type="button" class="b2"
+            onclick="resetForm()">Clear form</button></div>
+      </form>
+    </section>
+
+    <section id="stock">
+      <h2>Stock</h2>
+      <input id="sq" placeholder="Search by name, model or shelf" oninput="renderStock()">
+      <div class="wrap">
+        <table class="stack">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Product</th>
+              <th>Model / Company</th>
+              <th class="n">Qty</th>
+              <th class="n">Price</th>
+              <th>Shelf</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="stb"></tbody>
+          <tfoot id="stf"></tfoot>
+        </table>
+      </div>
+    </section>
+
+    <section id="bill">
+      <h2>Generate Bill</h2>
+      <div class="g">
+        <div><label for="bc">Customer name</label><input id="bc" placeholder="Walk-in Customer"
+            oninput="DB.draft.customer=this.value;persist()"></div>
+        <div><label for="bs">Search product to add</label><input id="bs" placeholder="Type name or model"
+            oninput="searchProd()" autocomplete="off"></div>
+      </div>
+      <div class="res" id="bres" style="display:none"></div>
+      <div class="wrap">
+        <table class="stack">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th class="n">Price</th>
+              <th>Qty</th>
+              <th class="n">Amount</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="btb"></tbody>
+        </table>
+      </div>
+      <div class="g" style="margin-top:12px">
+        <div><label for="bd">Discount (Rs)</label><input id="bd" type="number" min="0" step="any"
+            oninput="DB.draft.discount=+this.value||0;persist();renderBill(true)"></div>
+        <div class="sum" style="margin:0">
+          <div>Total<b id="bt">Rs 0</b></div>
+        </div>
+      </div>
+      <div class="row"><button class="acc" onclick="printBill()">Save & Print Bill</button><button class="danger"
+          onclick="clearBill()">Cancel bill</button></div>
+    </section>
+
+    <section id="rep">
+      <h2>Sales Report</h2>
+      <div class="row" style="margin:0 0 10px">
+        <button id="rAll" onclick="repMode('all')">Full Report</button>
+        <button id="rDay" class="b2" onclick="repMode('day')">Report by Date</button>
+        <input type="date" id="rd" style="width:auto;display:none" onchange="renderReport()">
+      </div>
+      <div id="rout"></div>
+    </section>
+  </main>
+
+  <footer>
+    B33 Baloch Khan Gabol Goth, Near Sumaira Residency Mosmiyat, Karachi.<br>
+    Email : ahmedkharal1546@gmail.com<br>
+    Developed by Abdul Majeed Chandio Whats app 03133381753
+  </footer>
+  <div id="toast"></div>
+  <div id="printArea"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const Rs = n => 'Rs ' + Number(n || 0).toLocaleString('en-PK', { maximumFractionDigits: 2 });
+    const LS = 'kharal_db_v1', uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') };
+    const blank = () => ({ stock: [], sales: [], draft: { customer: '', discount: 0, items: [] }, billNo: 1, savedAt: 0 });
+    let DB = blank(), fh = null, perm = 'off', busy = false, again = false, editId = null, mode = 'all';
+
+    /* ---------- storage ---------- */
+    function norm(d) { const b = blank(); return Object.assign(b, d || {}, { draft: Object.assign(b.draft, (d && d.draft) || {}) }) }
+    function load() {
+      let a = null, f = window.KHARAL_DATA;
+      try { a = JSON.parse(localStorage.getItem(LS)) } catch (x) { }
+      const best = [a, f].filter(Boolean).sort((p, q) => (q.savedAt || 0) - (p.savedAt || 0))[0];
+      DB = norm(best);
+    }
+    const FILE = () => 'window.KHARAL_DATA = ' + JSON.stringify(DB, null, 1) + ';\n';
+    async function persist() {
+      DB.savedAt = Date.now();
+      try { localStorage.setItem(LS, JSON.stringify(DB)) } catch (x) { }
+      if (!fh || perm !== 'on') return;
+      if (busy) { again = true; return }
+      busy = true;
+      try { const w = await fh.createWritable(); await w.write(FILE()); await w.close() }
+      catch (x) { perm = 'ask'; status(); toast('Could not write data.js - click Connect data.js') }
+      busy = false; if (again) { again = false; persist() }
+    }
+    function idb(mode, v) {
+      return new Promise((res, rej) => {
+        const r = indexedDB.open('kharal', 1); r.onupgradeneeded = () => r.result.createObjectStore('h');
+        r.onsuccess = () => { const s = r.result.transaction('h', mode).objectStore('h'); const q = mode === 'readonly' ? s.get('fh') : s.put(v, 'fh'); q.onsuccess = () => res(q.result); q.onerror = rej }; r.onerror = rej
+      })
+    }
+    async function connect() {
+      if (!window.showSaveFilePicker) { alert('This browser cannot write files directly. Data is kept in the browser; use Export Backup regularly. For file saving use Chrome or Edge on a computer or Android.'); return }
+      try {
+        if (fh && perm === 'ask') { if (await fh.requestPermission({ mode: 'readwrite' }) === 'granted') { perm = 'on'; await persist(); status(); toast('data.js connected'); return } }
+        fh = await showSaveFilePicker({ suggestedName: 'data.js', types: [{ description: 'JavaScript data file', accept: { 'text/javascript': ['.js'] } }] });
+        if (await fh.requestPermission({ mode: 'readwrite' }) !== 'granted') return;
+        perm = 'on'; await idb('readwrite', fh); await persist(); status(); toast('data.js connected and saved');
+      } catch (x) { if (x.name !== 'AbortError') toast('Permission was not granted') }
+    }
+    function status() {
+      const t = { on: '<b>Saving to data.js</b> and browser', ask: '<b>Permission needed</b> - click Connect data.js to resume file saving', off: 'Saving in browser only. Click Connect data.js to also save into a JS file.' };
+      $('st').innerHTML = t[perm]; $('cBtn').textContent = perm === 'ask' ? 'Reconnect data.js' : 'Connect data.js';
+    }
+    async function initFile() {
+      try { fh = await idb('readonly'); if (fh) { perm = (await fh.queryPermission({ mode: 'readwrite' })) === 'granted' ? 'on' : 'ask' } } catch (x) { }
+      status();
+    }
+    function exportDB() {
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(DB, null, 1)], { type: 'application/json' }));
+      a.download = 'kharal-backup-' + today() + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast('Backup downloaded');
+    }
+    function importDB(inp) {
+      const f = inp.files[0]; if (!f) return; const r = new FileReader();
+      r.onload = () => {
+        try {
+          const d = JSON.parse(r.result.replace(/^[^{]*/, '').replace(/;\s*$/, ''));
+          if (!Array.isArray(d.stock) || !Array.isArray(d.sales)) throw 0;
+          if (!confirm('Replace ALL current data with this backup?')) return;
+          DB = norm(d); persist(); renderAll(); toast('Backup imported');
+        } catch (x) { alert('This file is not a valid backup.') } inp.value = ''
+      };
+      r.readAsText(f);
+    }
+
+    /* ---------- ui helpers ---------- */
+    function toast(m) { const t = $('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', 2600) }
+    function go(v) {
+      document.querySelectorAll('section').forEach(s => s.classList.toggle('on', s.id === v));
+      document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+      if (v === 'stock') renderStock(); if (v === 'bill') renderBill(); if (v === 'rep') repMode(mode);
+      if (v !== 'add') resetForm();
+    }
+    document.getElementById('nav').onclick = e => { if (e.target.dataset.v) go(e.target.dataset.v) };
+    function renderAll() { renderStock(); renderBill(); renderReport() }
+
+    /* ---------- stock ---------- */
+    function saveStock(ev) {
+      ev.preventDefault();
+      const o = { name: $('fn').value.trim(), model: $('fm').value.trim(), qty: Math.floor(+$('fq').value), price: +$('fp').value, shelf: $('fs').value.trim() };
+      if (editId) { Object.assign(DB.stock.find(s => s.id === editId), o); toast('Stock updated') }
+      else {
+        const dup = DB.stock.find(s => s.name.toLowerCase() === o.name.toLowerCase() && s.model.toLowerCase() === o.model.toLowerCase());
+        if (dup && confirm('This product already exists. Add the quantity to the existing item?')) { dup.qty += o.qty; dup.price = o.price; dup.shelf = o.shelf }
+        else DB.stock.push(Object.assign({ id: uid() }, o));
+        toast('Stock saved');
+      }
+      persist(); resetForm();
+    }
+    function resetForm() { editId = null; $('sf').reset(); $('addT').textContent = 'Add Stock'; $('sBtn').textContent = 'Save stock' }
+    function editStock(id) {
+      const s = DB.stock.find(x => x.id === id); editId = id;
+      $('fn').value = s.name; $('fm').value = s.model; $('fq').value = s.qty; $('fp').value = s.price; $('fs').value = s.shelf;
+      go('add'); editId = id; $('addT').textContent = 'Edit Stock'; $('sBtn').textContent = 'Update stock';
+    }
+    function delStock(id) { if (confirm('Delete this product from stock?')) { DB.stock = DB.stock.filter(s => s.id !== id); persist(); renderStock() } }
+    function renderStock() {
+      const q = $('sq').value.toLowerCase().trim();
+      const list = DB.stock.filter(s => !q || (s.name + ' ' + s.model + ' ' + s.shelf).toLowerCase().includes(q));
+      $('stb').innerHTML = list.length ? list.map((s, i) => `<tr><td data-l="#">${i + 1}</td><td data-l="Product">${esc(s.name)}</td><td data-l="Model / Company">${esc(s.model)}</td>
+  <td data-l="Qty" class="n ${s.qty <= 3 ? 'low' : ''}">${s.qty}</td><td data-l="Price" class="n">${Rs(s.price)}</td><td data-l="Shelf">${esc(s.shelf)}</td>
+  <td><button class="sm" onclick="editStock('${s.id}')">Edit</button> <button class="sm danger" onclick="delStock('${s.id}')">Delete</button></td></tr>`).join('')
+        : '<tr><td colspan="7" class="empty">No stock found. Use Add Stock to enter products.</td></tr>';
+      const units = list.reduce((a, s) => a + s.qty, 0), val = list.reduce((a, s) => a + s.qty * s.price, 0);
+      $('stf').innerHTML = list.length ? `<tr><td colspan="3">Total (${list.length} products)</td><td class="n">${units}</td><td class="n" colspan="3">Stock value ${Rs(val)}</td></tr>` : '';
+    }
+
+    /* ---------- billing ---------- */
+    const cart = () => DB.draft.items;
+    function searchProd() {
+      const q = $('bs').value.toLowerCase().trim(), box = $('bres');
+      if (!q) { box.style.display = 'none'; return }
+      const l = DB.stock.filter(s => (s.name + ' ' + s.model).toLowerCase().includes(q)).slice(0, 30);
+      box.style.display = 'block';
+      box.innerHTML = l.length ? l.map(s => `<div onclick="addToBill('${s.id}')"><span>${esc(s.name)} <small>${esc(s.model)} | Shelf ${esc(s.shelf)}</small></span><span>${Rs(s.price)} <small>(${s.qty} left)</small></span></div>`).join('') : '<div class="empty">No matching product</div>';
+    }
+    function addToBill(id) {
+      const s = DB.stock.find(x => x.id === id); if (!s) return;
+      if (s.qty < 1) { toast('Out of stock'); return }
+      s.qty--; let it = cart().find(c => c.id === id);
+      if (it) it.qty++; else cart().push({ id, name: s.name, model: s.model, price: s.price, qty: 1 });
+      persist(); renderBill(); searchProd();
+    }
+    function chg(id, d) {
+      const it = cart().find(c => c.id === id), s = DB.stock.find(x => x.id === id);
+      if (d > 0) { if (!s || s.qty < 1) { toast('No more stock'); return } s.qty--; it.qty++ }
+      else { if (s) s.qty++; it.qty--; if (it.qty < 1) DB.draft.items = cart().filter(c => c.id !== id) }
+      persist(); renderBill(); searchProd();
+    }
+    function rmItem(id) { const it = cart().find(c => c.id === id), s = DB.stock.find(x => x.id === id); if (s) s.qty += it.qty; DB.draft.items = cart().filter(c => c.id !== id); persist(); renderBill(); searchProd() }
+    function setPrice(id, v) { cart().find(c => c.id === id).price = Math.max(0, +v || 0); persist(); renderBill(true) }
+    const billTotal = () => Math.max(0, cart().reduce((a, c) => a + c.price * c.qty, 0) - (DB.draft.discount || 0));
+    function renderBill(keep) {
+      if (!keep) {
+        $('bc').value = DB.draft.customer || ''; $('bd').value = DB.draft.discount || '';
+        $('btb').innerHTML = cart().length ? cart().map(c => `<tr><td data-l="Item">${esc(c.name)} <small>${esc(c.model)}</small></td>
+   <td data-l="Price" class="n"><input class="q" style="width:90px" type="number" min="0" value="${c.price}" onchange="setPrice('${c.id}',this.value)"></td>
+   <td data-l="Qty"><button class="sm" onclick="chg('${c.id}',-1)">-</button> <b>${c.qty}</b> <button class="sm" onclick="chg('${c.id}',1)">+</button></td>
+   <td data-l="Amount" class="n" id="a${c.id}">${Rs(c.price * c.qty)}</td><td><button class="sm danger" onclick="rmItem('${c.id}')">Remove</button></td></tr>`).join('')
+          : '<tr><td colspan="5" class="empty">Search a product above and click it to add to the bill.</td></tr>';
+      } else cart().forEach(c => { const a = $('a' + c.id); if (a) a.textContent = Rs(c.price * c.qty) });
+      $('bt').textContent = Rs(billTotal());
+    }
+    function clearBill() {
+      if (!cart().length && !DB.draft.customer) return;
+      if (!confirm('Cancel this bill? Items go back to stock.')) return;
+      cart().forEach(c => { const s = DB.stock.find(x => x.id === c.id); if (s) s.qty += c.qty });
+      DB.draft = blank().draft; persist(); renderBill(); $('bs').value = ''; searchProd();
+    }
+    function printBill() {
+      if (!cart().length) { toast('Add at least one item'); return }
+      const d = new Date(), sale = {
+        no: DB.billNo, date: today(), time: d.toLocaleTimeString(), customer: (DB.draft.customer || '').trim() || 'Walk-in Customer',
+        items: cart().map(c => ({ name: c.name, model: c.model, price: c.price, qty: c.qty })), discount: DB.draft.discount || 0, total: billTotal()
+      };
+      const sub = sale.items.reduce((a, c) => a + c.price * c.qty, 0);
+      $('printArea').innerHTML = `<div class="pc"><h1 style="margin:0">KHARAL COMMUNICATION</h1><div>we deal in all kind of Mobile accessories</div><div>Contact : Ahmed Kharal 03172128750</div></div><hr>
+  <div>Bill No: <b>${sale.no}</b> &nbsp; Date: ${sale.date} ${esc(sale.time)}</div><div>Customer: <b>${esc(sale.customer)}</b></div>
+  <table><thead><tr><th>#</th><th>Item</th><th class="n">Price</th><th class="n">Qty</th><th class="n">Amount</th></tr></thead><tbody>
+  ${sale.items.map((c, i) => `<tr><td>${i + 1}</td><td>${esc(c.name)} ${esc(c.model)}</td><td class="n">${Rs(c.price)}</td><td class="n">${c.qty}</td><td class="n">${Rs(c.price * c.qty)}</td></tr>`).join('')}
+  </tbody><tfoot><tr><td colspan="4" class="n">Subtotal</td><td class="n">${Rs(sub)}</td></tr>${sale.discount ? `<tr><td colspan="4" class="n">Discount</td><td class="n">- ${Rs(sale.discount)}</td></tr>` : ''}
+  <tr><td colspan="4" class="n">Total</td><td class="n">${Rs(sale.total)}</td></tr></tfoot></table>
+  <p class="pc">Thank you for your purchase!</p><hr><div class="pc" style="font-size:.85em">B33 Baloch Khan Gabol Goth, Near Sumaira Residency Mosmiyat, Karachi.<br>Email : ahmedkharal1546@gmail.com</div>`;
+      DB.sales.push(sale); DB.billNo++; DB.draft = blank().draft; persist(); renderBill(); $('bs').value = ''; searchProd();
+      window.print();
+    }
+
+    /* ---------- report ---------- */
+    function repMode(m) {
+      mode = m; $('rAll').className = m === 'all' ? '' : 'b2'; $('rDay').className = m === 'day' ? '' : 'b2';
+      $('rd').style.display = m === 'day' ? 'block' : 'none'; if (m === 'day' && !$('rd').value) $('rd').value = today();
+      renderReport();
+    }
+    function renderReport() {
+      let l = DB.sales.slice();
+      if (mode === 'day') l = l.filter(s => s.date === $('rd').value);
+      l.sort((a, b) => b.no - a.no);
+      const rev = l.reduce((a, s) => a + s.total, 0), qty = l.reduce((a, s) => a + s.items.reduce((x, i) => x + i.qty, 0), 0);
+      const by={};l.forEach(s=>{
+ const sub=s.items.reduce((a,i)=>a+i.qty*i.price,0);
+ s.items.forEach(i=>{
+  const k=i.name+' | '+i.model,amt=i.qty*i.price;
+  by[k]=by[k]||{q:0,a:0,d:0};
+  by[k].q+=i.qty;by[k].a+=amt;
+  by[k].d+=sub>0?(s.discount||0)*amt/sub:0;
+ });
+});
+      const items = Object.entries(by).sort((a, b) => b[1].a - a[1].a);
+      $('rout').innerHTML = `<div class="sum"><div>Bills<b>${l.length}</b></div><div>Items sold<b>${qty}</b></div><div>Total income<b>${Rs(rev)}</b></div></div>` +
+        (l.length ? `<h3>Bills</h3><div class="wrap"><table class="stack"><thead><tr><th>Bill</th><th>Date</th><th>Customer</th><th>Items</th><th class="n">Total</th></tr></thead><tbody>
+ ${l.map(s => `<tr><td data-l="Bill">${s.no}</td><td data-l="Date">${s.date}</td><td data-l="Customer">${esc(s.customer)}</td><td data-l="Items">${s.items.map(i => esc(i.name) + ' x' + i.qty).join(', ')}</td><td data-l="Total" class="n">${Rs(s.total)}</td></tr>`).join('')}</tbody></table></div>
+<h3>Item-wise sales</h3><div class="wrap"><table class="stack"><thead><tr><th>Product</th><th class="n">Qty sold</th><th class="n">Amount</th><th class="n">Discount</th></tr></thead><tbody>
+ ${items.map(([k,v])=>`<tr><td data-l="Product">${esc(k)}</td><td data-l="Qty sold" class="n">${v.q}</td><td data-l="Amount" class="n">${Rs(v.a)}</td><td data-l="Discount" class="n">${v.d?'- '+Rs(v.d):'-'}</td></tr>`).join('')}</tbody>
+ <tfoot><tr><td>Total</td><td class="n">${qty}</td><td class="n">${Rs(items.reduce((a,[k,v])=>a+v.a,0))}</td><td class="n">${rev<items.reduce((a,[k,v])=>a+v.a,0)?'- ':''}${Rs(items.reduce((a,[k,v])=>a+v.d,0))}</td></tr></tfoot></table></div>`
+          : '<div class="empty">No sales found for this selection.</div>');
+    }
+
+    /* ---------- start ---------- */
+    load(); initFile();
+  </script>
+</body>
+
+</html>
